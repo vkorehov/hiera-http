@@ -104,10 +104,10 @@ Puppet::Functions.create_function(:hiera_http) do
     uri = URI.parse(options['uri'])
     host, port, path = uri.host, uri.port, URI.escape(context.interpolate(uri.request_uri))
 
-    if context.cache_has_key(path)
-      context.explain { "Returning cached value for #{path}" }
-      return context.cached_value(path)
-    else
+#    if context.cache_has_key(path)
+#      context.explain { "Returning cached value for #{path}" }
+#      return context.cached_value(path)
+#    else
       context.explain { "Querying #{uri}" }
 
       if context.cache_has_key('__lookuphttp')
@@ -128,7 +128,7 @@ Puppet::Functions.create_function(:hiera_http) do
       rescue LookupHttp::LookupError => e
         raise Puppet::DataBinding::LookupError, "lookup_http failed #{e.message}"
       end
-    end
+#    end
   end
 
   def lookup_supported_params
