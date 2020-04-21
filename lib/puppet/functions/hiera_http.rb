@@ -117,14 +117,14 @@ Puppet::Functions.create_function(:hiera_http) do
         options.each do |k,v|
           lookup_params[k.to_sym] = v if lookup_supported_params.include?(k.to_sym)
         end
-        http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port}))
+        http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port, :debug_log => Hiera.debug}))
 #        context.cache('__lookuphttp', http_handler)
 #      end
       begin
-        context.explain { "Before http_handler.get_parsed" }
+        context.explain { "Before http_handler.get_parsed #{path} #{host} #{port}" }
         response = http_handler.get_parsed(path)
         context.explain { "After http_handler.get_parsed" }
-        context.explain { "Respones #{response}" }
+        context.explain { "Response #{path} #{response}" }
         #
 #        context.cache(path, response)
         return response
