@@ -98,7 +98,9 @@ Puppet::Functions.create_function(:hiera_http) do
     return parsed_str
   end
 
-
+  def custom_debug_Log(param)
+    context.explain { "DEBUG #{param}" }
+  end
 
   def http_get(context, options)
     uri = URI.parse(options['uri'])
@@ -117,7 +119,7 @@ Puppet::Functions.create_function(:hiera_http) do
         options.each do |k,v|
           lookup_params[k.to_sym] = v if lookup_supported_params.include?(k.to_sym)
         end
-        http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port, :debug_log => context.explain}))
+        http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port, :debug_log => :custom_debug_Log}))
 #        context.cache('__lookuphttp', http_handler)
 #      end
       begin
