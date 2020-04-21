@@ -110,20 +110,23 @@ Puppet::Functions.create_function(:hiera_http) do
 #    else
       context.explain { "Querying #{uri}" }
 
-      if context.cache_has_key('__lookuphttp')
-        http_handler = context.cached_value('__lookuphttp')
-      else
+#      if context.cache_has_key('__lookuphttp')
+#        http_handler = context.cached_value('__lookuphttp')
+#      else
         lookup_params = {}
         options.each do |k,v|
           lookup_params[k.to_sym] = v if lookup_supported_params.include?(k.to_sym)
         end
         http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port}))
-        context.cache('__lookuphttp', http_handler)
-      end
-
+#        context.cache('__lookuphttp', http_handler)
+#      end
       begin
+        context.explain { "Before http_handler.get_parsed" }
         response = http_handler.get_parsed(path)
-        context.cache(path, response)
+        context.explain { "After http_handler.get_parsed" }
+        context.explain { "Respones #{response}" }
+        #
+#        context.cache(path, response)
         return response
       rescue LookupHttp::LookupError => e
         raise Puppet::DataBinding::LookupError, "lookup_http failed #{e.message}"
