@@ -1,4 +1,3 @@
-
 Puppet::Functions.create_function(:hiera_http) do
 
   begin
@@ -18,10 +17,10 @@ Puppet::Functions.create_function(:hiera_http) do
 
     if confine_keys = options['confine_to_keys']
       raise ArgumentError, 'confine_to_keys must be an array' unless confine_keys.is_a?(Array)
-      confine_keys.map! { |r| Regexp.new(r) }
+      confine_keys.map! {|r| Regexp.new(r)}
       regex_key_match = Regexp.union(confine_keys)
       unless key[regex_key_match] == key
-        context.explain { "Skipping hiera_http backend because key does not match confine_to_keys" }
+        context.explain {"Skipping hiera_http backend because key does not match confine_to_keys"}
         context.not_found
         return
       end
@@ -51,7 +50,7 @@ Puppet::Functions.create_function(:hiera_http) do
     # Interpolate values such as __KEY__ into each element of the
     # dig path, eg: dig_key: document.data.__MODULE__
     #
-    dig_path = dig_key.split(/\./).map { |p| parse_tags(key, p) }
+    dig_path = dig_key.split(/\./).map {|p| parse_tags(key, p)}
 
 
     if result.nil?
@@ -79,7 +78,7 @@ Puppet::Functions.create_function(:hiera_http) do
     end
   end
 
-  def parse_tags(key,str)
+  def parse_tags(key, str)
     key_parts = key.split(/::/)
 
     parsed_str = str.gsub(/__(\w+)__/i) do
@@ -98,9 +97,6 @@ Puppet::Functions.create_function(:hiera_http) do
     return parsed_str
   end
 
-  def custom_debug_Log(param)
-    context.explain { "DEBUG #{param}" }
-  end
 
   def http_get(context, options)
     uri = URI.parse(options['uri'])
@@ -110,48 +106,45 @@ Puppet::Functions.create_function(:hiera_http) do
 #      context.explain { "Returning cached value for #{path}" }
 #      return context.cached_value(path)
 #    else
-      context.explain { "Querying #{uri}" }
+    context.explain {"Querying #{uri}"}
 
 #      if context.cache_has_key('__lookuphttp')
 #        http_handler = context.cached_value('__lookuphttp')
 #      else
-        lookup_params = {}
-        options.each do |k,v|
-          lookup_params[k.to_sym] = v if lookup_supported_params.include?(k.to_sym)
-        end
-        http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port, :debug_log => :custom_debug_Log}))
+    lookup_params = {}
+    options.each do |k, v|
+      lookup_params[k.to_sym] = v if lookup_supported_params.include?(k.to_sym)
+    end
+    http_handler = LookupHttp.new(lookup_params.merge({:host => host, :port => port}))
 #        context.cache('__lookuphttp', http_handler)
 #      end
-      begin
-        context.explain { "Before http_handler.get_parsed #{path} #{host} #{port}" }
-        response = http_handler.get_parsed(path)
-        context.explain { "After http_handler.get_parsed" }
-        context.explain { "Response #{path} #{response}" }
-        #
-#        context.cache(path, response)
-        return response
-      rescue LookupHttp::LookupError => e
-        raise Puppet::DataBinding::LookupError, "lookup_http failed #{e.message}"
-      end
+
+    begin
+      response = http_handler.get_parsed(path)
+      #       context.cache(path, response)
+      return response
+    rescue LookupHttp::LookupError => e
+      raise Puppet::DataBinding::LookupError, "lookup_http failed #{e.message}"
+    end
 #    end
   end
 
   def lookup_supported_params
     [
-      :output,
-      :failure,
-      :ignore_404,
-      :headers,
-      :http_connect_timeout,
-      :http_read_timeout,
-      :use_ssl,
-      :ssl_ca_cert,
-      :ssl_cert,
-      :ssl_key,
-      :ssl_verify,
-      :use_auth,
-      :auth_user,
-      :auth_pass,
+        :output,
+        :failure,
+        :ignore_404,
+        :headers,
+        :http_connect_timeout,
+        :http_read_timeout,
+        :use_ssl,
+        :ssl_ca_cert,
+        :ssl_cert,
+        :ssl_key,
+        :ssl_verify,
+        :use_auth,
+        :auth_user,
+        :auth_pass,
     ]
   end
 end
